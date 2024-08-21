@@ -9,6 +9,7 @@ interface IProduct extends Document {
 	description: string
 	isDeleted: boolean
 	isBlocked: boolean
+	isInSale: boolean
 	platformDiscount?: number
 	_blockedBy?: Schema.Types.ObjectId
 	_category: Schema.Types.ObjectId
@@ -16,7 +17,7 @@ interface IProduct extends Document {
 		
 }
 
-const productSchema: Schema = new Schema(
+const productSchema: Schema = new Schema<IProduct>(
 	{
 		name: {
 			type: String,
@@ -52,6 +53,10 @@ const productSchema: Schema = new Schema(
 			default: false,
 		},
 		isBlocked: {
+			type: Boolean,
+			default: false,
+		},
+		isInSale: {
 			type: Boolean,
 			default: false,
 		},

@@ -6,17 +6,27 @@ import { removeDiscount } from '@services/discount/removeDiscount'
 
 
 export const startDiscountScheduler = () => {
-	cron.schedule('* * * * *', async () => {
-		const now = moment().toDate()
+	cron.schedule('* * * * * *', async () => {
+		const now = moment().startOf('seconds')
 
-		const discountsToApply = await Discount.find({ startDate: { $lte: now }, isDeleted: false })
+		const discountsToApply = await Discount.find({
+			startDate: { $lte: now.toDate() },
+			isDeleted: false,
+		})
 		for (const discount of discountsToApply) {
-			await applyDiscount(discount._id.toString())
+            if (moment(discount.startDate).isSame(now)) {
+                await applyDiscount(discount._id.toString())
+            }
 		}
 
-		const discountsToEnd = await Discount.find({ endDate: { $lte: now }, isDeleted: false })
+		const discountsToEnd = await Discount.find({
+			endDate: { $lte: now.toDate() },
+			isDeleted: false,
+		})
 		for (const discount of discountsToEnd) {
-			await removeDiscount(discount._id.toString())
+            if (moment(discount.endDate).isSame(now)) {
+                await removeDiscount(discount._id.toString())
+            }
 		}
 	})
 }
