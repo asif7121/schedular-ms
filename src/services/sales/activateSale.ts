@@ -12,7 +12,9 @@ export const activateSale = async (saleId: string) => {
 			const productDoc = await Product.findById(product.productId)
 			if (productDoc) {
 				const discountedPrice = productDoc.mrp - (productDoc.mrp * sale.saleDiscount) / 100
-				productDoc.price = discountedPrice
+                productDoc.price = discountedPrice
+                product.productPrice = discountedPrice
+                productDoc.isInSale = true
 				await productDoc.save()
 			}
 		}

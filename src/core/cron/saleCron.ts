@@ -7,25 +7,29 @@ import { deactivateSale } from '@services/sales/deactivaleSale'
 
 
 export const startSaleScheduler = () => {
-	cron.schedule('* * * * *', async () => {
-		const now = moment().toDate()
+	cron.schedule('* * * * * *', async () => {
+		const now = moment().startOf('seconds')
 
 		const salesToStart = await Sale.find({
-			startDate: { $lte: now },
+			startDate: { $lte: now.toDate() },
 			isActive: false,
 			isDeleted: false,
 		})
 		for (const sale of salesToStart) {
-			await activateSale(sale._id.toString())
+            if (moment(sale.startDate).isSame(now)) {
+                await activateSale(sale._id.toString())
+            }
 		}
 
 		const salesToEnd = await Sale.find({
-			endDate: { $lte: now },
+			endDate: { $lte: now.toDate() },
 			isActive: true,
 			isDeleted: false,
 		})
 		for (const sale of salesToEnd) {
-			await deactivateSale(sale._id.toString())
+            if (moment(sale.endDate).isSame(now)) {
+                await deactivateSale(sale._id.toString())
+            }
 		}
 	})
 }

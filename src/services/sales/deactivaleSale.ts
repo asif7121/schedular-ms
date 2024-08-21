@@ -14,7 +14,9 @@ export const deactivateSale = async (saleId: string) => {
 			if (productDoc) {
 				productDoc.price = productDoc.discount
 					? productDoc.mrp - (productDoc.mrp * productDoc.discount) / 100
-					: productDoc.mrp
+                    : productDoc.mrp
+                product.productPrice = productDoc.price
+                productDoc.isInSale = false
 				await productDoc.save()
 			}
 		}
